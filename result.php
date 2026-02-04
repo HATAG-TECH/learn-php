@@ -48,7 +48,7 @@ $result = ($passed) ? "PASSED" : "FAILED";
     <p><strong>Physics:</strong> <?php echo $physics; ?></p>
     <p><strong>Chemistry:</strong> <?php echo $chemistry; ?></p>
 
-    <hr>
+    <hr style="height:20px;background-color:light-gray">
 
     <p><strong>Total:</strong> <?php echo $total; ?></p>
     <p><strong>Average (with bonus):</strong> <?php echo $average; ?></p>
