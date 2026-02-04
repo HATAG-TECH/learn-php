@@ -13,8 +13,8 @@
         <!-- <label for="quantity">quantity</label>
         <input type="text" name="quantity" id="quantity"> -->
 
-          <label for="x">x:</label>
-        <input type="text" name="x" id="x">
+        <label for="x">x:</label>
+        <input type="text" name="x" id="x"> <br>
          <label for="y">y:</label>
         <input type="text" name="y" id="y">
         <input type="submit" value="total">
@@ -30,11 +30,12 @@ $price=30;
 $country = "Ethiopia";
 // $quantity=$_POST["quantity"];
 $x=$_POST["x"];
-$y=$_POST["y"];
+$y=abs($_POST["y"]);
 // $total=abs($price*$quantity);
-$result=sqr($x,$y);
-echo "result:" . $result;
-echo "total is:{$total}";
+$result=null;
+$result=pow($x,$y);
+echo "result:" . $result ."<br>";
+// echo "total is:{$total}";
 echo "My name is " . $name . "<br>";
 echo "I am " . $age . " years old.<br>";
 echo "I live in " . $country;
