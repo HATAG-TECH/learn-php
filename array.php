@@ -69,4 +69,9 @@ echo count($capitals);
 
 
 
+
+
+
+
+
 ?>
