@@ -16,34 +16,25 @@
 </body>
 </html>
 <?php
-// $username= $_POST["username"];
-// $password= $_POST["password"];
-// echo "Username: {$username} <br>";
-// echo "Password: {$password} <br>";
-
-
-
-// foreach($_POST as $key => $value){
-//     echo "{$key} = {$value} <br>";
-// }
-
 if(isset($_POST["login"])){
-    $username= $_POST["username"];
-    $password= $_POST["password"];
-    if(empty($username)){
-        echo "username is missing";
+
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    // Check both empty FIRST
+    if(empty($username) && empty($password)){
+        echo "Username and Password are missing <br>";
+    }
+    elseif(empty($username)){
+        echo "Username is missing <br>";
     }
     elseif(empty($password)){
-         echo "password is missing";
-
+        echo "Password is missing <br>";
     }
     else{
-        echo "username and password is inserted <br>";
-        echo "username: {$username} <br>";
-        echo "password: {$password} <br>";
-    
+        echo "Login successful <br>";
+        echo "Username: {$username} <br>";
+        echo "Password: {$password} <br>";
     }
 }
-
-
 ?>
