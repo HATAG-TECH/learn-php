@@ -21,11 +21,17 @@
 
 
 <?php
-
-$selected=$_POST["credit-card"];
-$confirmed=$_POST["confirm"];
-if(isset($confirmed)){
-    echo "you selected {$selected}";
+if(isset($_POST["confirm"])){
+    if(empty($_POST["credit-card"])){
+        echo "please select  a payment method first";
+    }
+    else{
+         $selected=$_POST["credit-card"];
+         echo "you selected {$selected}";
+    }
+   
 }
+
+
 
 ?>
