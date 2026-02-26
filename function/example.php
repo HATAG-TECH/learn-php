@@ -32,3 +32,9 @@ if(isset($total)){
     echo "Total: " . $total;
 }
 ?>
+// example of built-in functions
+<?php
+echo strlen("Hatag"); // 5
+echo "<br>";
+echo strtoupper("php"); // PHP
+?>
