@@ -38,3 +38,15 @@ echo strlen("Hatag"); // 5
 echo "<br>";
 echo strtoupper("php"); // PHP
 ?>
+
+
+// example of variable scope
+<?php
+$x = 10;
+
+function test(){
+    echo $x; // ERROR (not accessible)
+}
+
+test();
+?>
