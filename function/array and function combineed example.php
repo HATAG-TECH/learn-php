@@ -72,3 +72,38 @@ if(isset($_POST["buy"])){
 
 </body>
 </html>
+
+
+// ===== ANOTHER EXAMPLE: STUDENT GRADES =====
+
+<?php
+function calculateAverage($marks){
+    $total = 0;
+
+    foreach($marks as $mark){
+        $total += $mark;
+    }
+
+    return $total / count($marks);
+}
+
+function getGrade($average){
+    if($average >= 80){
+        return "A";
+    }
+    elseif($average >= 60){
+        return "B";
+    }
+    else{
+        return "C";
+    }
+}
+
+$marks = [85, 72, 90];
+
+$average = calculateAverage($marks);
+$grade = getGrade($average);
+
+echo "Average: " . $average . "<br>";
+echo "Grade: " . $grade;
+?>
