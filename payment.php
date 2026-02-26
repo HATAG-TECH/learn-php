@@ -9,11 +9,11 @@
     
 <form action="payment.php" method="post">
 
-    <input type="radio" name="vegetables" value="Avocado">Avocado <br>
-    <input type="radio" name="vegetables" value="Mango">Mango <br>
-    <input type="radio" name="vegetables" value="Orange">Orange <br>
-    <input type="radio" name="vegetables" value="Banana">Banana <br>
-    <input type="radio" name="vegetables" value="Lamon">Lamon <br>
+    <input type="checkbox" name="Avocado" value="Avocado">Avocado <br>
+    <input type="checkbox" name="Mango" value="Mango">Mango <br>
+    <input type="checkbox" name="Orange" value="Orange">Orange <br>
+    <input type="checkbox" name="Banana" value="Banana">Banana <br>
+    <input type="checkbox" name="Lamon" value="Lamon">Lamon <br>
     <input type="submit" name="choose" value="Choose">
 
 </form>
@@ -38,9 +38,9 @@ if(isset($_POST["choose"])){
 <br>
 <form action="payment.php" method="post">
 
-    <input type="radio" name="credit-card" value="Master-Card">Master-Card <br>
-    <input type="radio" name="credit-card" value="Visa">Visa <br>
-    <input type="radio" name="credit-card" value="American-Express">American-Express <br>
+    <input type="checkbox" name="credit-card" value="Master-Card">Master-Card <br>
+    <input type="checkbox" name="credit-card" value="Visa">Visa <br>
+    <input type="checkbox" name="credit-card" value="American-Express">American-Express <br>
     <input type="submit" name="confirm" value="confirm">
 
 </form>
