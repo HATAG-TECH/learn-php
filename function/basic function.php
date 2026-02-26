@@ -27,3 +27,11 @@ function add($a, $b){
 $result = add(10, 5);
 echo $result; // 15
 ?>
+// function with default parameter
+<?php
+function greet($name = "Guest"){                    
+    echo "Hello " . $name . "<br>";
+}   
+greet(); // Hello Guest
+greet("Hatag"); // Hello Hatag
+?>  
