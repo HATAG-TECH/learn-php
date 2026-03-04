@@ -3,35 +3,40 @@ require "config.php";
 
 if(isset($_POST["signup"])){
     $username = trim($_POST["username"]);
+    $email = trim($_POST["email"]);
     $password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
     $role = $_POST["role"];
 
     // Basic validation
-    if(empty($username) || empty($password) || empty($confirm_password)){
+    if(empty($username) || empty($email) || empty($password) || empty($confirm_password)){
         $error = "All fields are required!";
+    } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $error = "Invalid email format!";
     } elseif($password !== $confirm_password){
         $error = "Passwords do not match!";
-    } elseif(strlen($password) < 6){
-        $error = "Password must be at least 6 characters!";
+    } elseif(strlen($password) < 8 || !preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
+        $error = "Password must be at least 8 characters, include an uppercase letter and a number!";
     } else {
-        // Check if username exists
-        $sql = "SELECT id FROM users WHERE username = ?";
+        // Check if username or email exists
+        $sql = "SELECT id FROM users WHERE username = ? OR email = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $username);
+        $stmt->bind_param("ss", $username, $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if($result->num_rows > 0){
-            $error = "Username already exists!";
+            $error = "Username or email already exists!";
         } else {
             // Hash password and insert
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+            $verification_token = bin2hex(random_bytes(32)); // For email verification (placeholder)
+            $sql = "INSERT INTO users (username, email, password, role, verified) VALUES (?, ?, ?, ?, 1)"; // Set verified=1 for now (no email sending)
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $username, $hashed_password, $role);
+            $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
             if($stmt->execute()){
                 $success = "Account created successfully! <a href='secure login.php'>Login here</a>";
+                // TODO: Send verification email with $verification_token
             } else {
                 $error = "Error creating account!";
             }
@@ -43,26 +48,53 @@ if(isset($_POST["signup"])){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Signup</h2>
-    <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
-    <?php if (isset($success)) { echo "<p style='color: green;'>$success</p>"; } ?>
-    <form method="POST" action="">
-        <label for="username">Username:</label>
-        <input type="text" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <label for="confirm_password">Confirm Password:</label>
-        <input type="password" name="confirm_password" required><br>
-        <label for="role">Role:</label>
-        <select name="role" required>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-        </select><br>
-        <button type="submit" name="signup">Signup</button>
-    </form>
-    <p>Already have an account? <a href="secure login.php">Login</a></p>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">Signup</h2>
+                    </div>
+                    <div class="card-body">
+                        <?php if (isset($error)) { echo "<div class='alert alert-danger'>$error</div>"; } ?>
+                        <?php if (isset($success)) { echo "<div class='alert alert-success'>$success</div>"; } ?>
+                        <form method="POST" action="">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username:</label>
+                                <input type="text" name="username" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password:</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password:</label>
+                                <input type="password" name="confirm_password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Role:</label>
+                                <select name="role" class="form-select" required>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <button type="submit" name="signup" class="btn btn-primary w-100">Signup</button>
+                        </form>
+                        <p class="mt-3 text-center">Already have an account? <a href="secure login.php" class="btn btn-secondary">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -10,6 +10,6 @@ if (!isset($_SESSION['username']) || ($_SESSION['role'] ?? '') !== 'admin') {
 <body>
 <h2>Admin Panel 👑</h2>
 <p>Welcome Admin <?= htmlspecialchars($_SESSION['username']) ?></p>
-<a href="logout.php">Logout</a>
+<a href="real login and signup/profile.php">Edit Profile</a> | <a href="logout.php">Logout</a>
 </body>
 </html>
