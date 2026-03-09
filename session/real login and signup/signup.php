@@ -37,12 +37,24 @@ if(isset($_POST["signup"])){
             } else {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $verification_token = bin2hex(random_bytes(32));
+                $verification_expires = date("Y-m-d H:i:s", strtotime("+24 hours"));
+                $verification_link = "http://localhost/learn-php/session/real%20login%20and%20signup/verify_email.php?token=" . urlencode($verification_token);
                 $role = "user";
-                $sql = "INSERT INTO users (username, email, password, role, verified) VALUES (?, ?, ?, ?, 1)";
+                $sql = "INSERT INTO users (username, email, password, role, verified, verification_token, verification_expires) VALUES (?, ?, ?, ?, 0, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
+                $stmt->bind_param("ssssss", $username, $email, $hashed_password, $role, $verification_token, $verification_expires);
                 if($stmt->execute()){
-                    $success = "Account created successfully! <a href='secure login.php'>Login here</a>";
+                    $subject = "Verify your account";
+                    $message = "Hello {$username},\n\nPlease verify your account by opening this link:\n{$verification_link}\n\nThis link expires in 24 hours.";
+                    $headers = "From: no-reply@localhost";
+                    $mail_sent = @mail($email, $subject, $message, $headers);
+
+                    $success = "Account created successfully. Please verify your email before logging in.";
+
+                    if (!$mail_sent) {
+                        $safe_link = htmlspecialchars($verification_link);
+                        $success .= " <a href='{$safe_link}'>Verify account</a>";
+                    }
                 } else {
                     $error = "Error creating account!";
                 }
