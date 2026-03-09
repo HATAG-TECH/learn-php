@@ -2,35 +2,43 @@
 session_start();
 require "config.php";
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $token = $_GET['token'] ?? '';
 $error = '';
 $success = '';
 
 if(isset($_POST["reset"])){
-    $password = $_POST["password"];
-    $confirm_password = $_POST["confirm_password"];
-
-    if(empty($password) || $password !== $confirm_password || strlen($password) < 8 || !preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
-        $error = "Password must be at least 8 characters, include an uppercase letter and a number, and match confirmation!";
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error = "Invalid request!";
     } else {
-        $sql = "SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $token);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $password = $_POST["password"];
+        $confirm_password = $_POST["confirm_password"];
 
-        if($result->num_rows === 1){
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE reset_token = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $hashed_password, $token);
-            if($stmt->execute()){
-                $success = "Password reset successfully! <a href='secure login.php'>Login here</a>";
-            } else {
-                $error = "Error resetting password!";
-            }
+        if(empty($password) || $password !== $confirm_password || strlen($password) < 8 || !preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
+            $error = "Password must be at least 8 characters, include an uppercase letter and a number, and match confirmation!";
         } else {
-            $error = "Invalid or expired token!";
+            $sql = "SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $token);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if($result->num_rows === 1){
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $sql = "UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE reset_token = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ss", $hashed_password, $token);
+                if($stmt->execute()){
+                    $success = "Password reset successfully! <a href='secure login.php'>Login here</a>";
+                } else {
+                    $error = "Error resetting password!";
+                }
+            } else {
+                $error = "Invalid or expired token!";
+            }
         }
     }
 }
@@ -56,6 +64,7 @@ if(isset($_POST["reset"])){
                         <?php if (isset($success)) { echo "<div class='alert alert-success'>$success</div>"; } ?>
                         <?php if(empty($success)): ?>
                         <form method="POST" action="">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                             <div class="mb-3">
                                 <label for="password" class="form-label">New Password:</label>
                                 <input type="password" name="password" class="form-control" required>

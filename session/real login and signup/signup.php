@@ -1,44 +1,51 @@
 <?php
+session_start();
 require "config.php";
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if(isset($_POST["signup"])){
-    $username = trim($_POST["username"]);
-    $email = trim($_POST["email"]);
-    $password = $_POST["password"];
-    $confirm_password = $_POST["confirm_password"];
-    $role = $_POST["role"];
-
-    // Basic validation
-    if(empty($username) || empty($email) || empty($password) || empty($confirm_password)){
-        $error = "All fields are required!";
-    } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $error = "Invalid email format!";
-    } elseif($password !== $confirm_password){
-        $error = "Passwords do not match!";
-    } elseif(strlen($password) < 8 || !preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
-        $error = "Password must be at least 8 characters, include an uppercase letter and a number!";
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error = "Invalid request!";
     } else {
-        // Check if username or email exists
-        $sql = "SELECT id FROM users WHERE username = ? OR email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $username, $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $username = trim($_POST["username"]);
+        $email = trim($_POST["email"]);
+        $password = $_POST["password"];
+        $confirm_password = $_POST["confirm_password"];
 
-        if($result->num_rows > 0){
-            $error = "Username or email already exists!";
+        if(empty($username) || empty($email) || empty($password) || empty($confirm_password)){
+            $error = "All fields are required!";
+        } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+            $error = "Invalid email format!";
+        } elseif($password !== $confirm_password){
+            $error = "Passwords do not match!";
+        } elseif(strlen($username) < 3 || !preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+            $error = "Username must be at least 3 characters and contain only letters, numbers, and underscores!";
+        } elseif(strlen($password) < 8 || !preg_match("/[A-Z]/", $password) || !preg_match("/[0-9]/", $password)){
+            $error = "Password must be at least 8 characters, include an uppercase letter and a number!";
         } else {
-            // Hash password and insert
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $verification_token = bin2hex(random_bytes(32)); // For email verification (placeholder)
-            $sql = "INSERT INTO users (username, email, password, role, verified) VALUES (?, ?, ?, ?, 1)"; // Set verified=1 for now (no email sending)
+            $sql = "SELECT id FROM users WHERE username = ? OR email = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
-            if($stmt->execute()){
-                $success = "Account created successfully! <a href='secure login.php'>Login here</a>";
-                // TODO: Send verification email with $verification_token
+            $stmt->bind_param("ss", $username, $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if($result->num_rows > 0){
+                $error = "Username or email already exists!";
             } else {
-                $error = "Error creating account!";
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $verification_token = bin2hex(random_bytes(32));
+                $role = "user";
+                $sql = "INSERT INTO users (username, email, password, role, verified) VALUES (?, ?, ?, ?, 1)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
+                if($stmt->execute()){
+                    $success = "Account created successfully! <a href='secure login.php'>Login here</a>";
+                } else {
+                    $error = "Error creating account!";
+                }
             }
         }
     }
@@ -64,6 +71,7 @@ if(isset($_POST["signup"])){
                         <?php if (isset($error)) { echo "<div class='alert alert-danger'>$error</div>"; } ?>
                         <?php if (isset($success)) { echo "<div class='alert alert-success'>$success</div>"; } ?>
                         <form method="POST" action="">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username:</label>
                                 <input type="text" name="username" class="form-control" required>
@@ -79,13 +87,6 @@ if(isset($_POST["signup"])){
                             <div class="mb-3">
                                 <label for="confirm_password" class="form-label">Confirm Password:</label>
                                 <input type="password" name="confirm_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Role:</label>
-                                <select name="role" class="form-select" required>
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                </select>
                             </div>
                             <button type="submit" name="signup" class="btn btn-primary w-100">Signup</button>
                         </form>

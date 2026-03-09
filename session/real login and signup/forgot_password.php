@@ -2,31 +2,38 @@
 session_start();
 require "config.php";
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if(isset($_POST["forgot"])){
-    $email = trim($_POST["email"]);
-
-    if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $error = "Please enter a valid email!";
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error = "Invalid request!";
     } else {
-        $sql = "SELECT id FROM users WHERE email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $email = trim($_POST["email"]);
 
-        if($result->num_rows === 1){
-            $reset_token = bin2hex(random_bytes(32));
-            $reset_expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
-
-            $sql = "UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $reset_token, $reset_expires, $email);
-            $stmt->execute();
-
-            // TODO: Send email with reset link: http://localhost/learn-php/session/real login and signup/reset_password.php?token=$reset_token
-            $success = "If the email exists, a reset link has been sent. Check your email.";
+        if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){
+            $error = "Please enter a valid email!";
         } else {
-            $success = "If the email exists, a reset link has been sent."; // Generic message for security
+            $sql = "SELECT id FROM users WHERE email = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if($result->num_rows === 1){
+                $reset_token = bin2hex(random_bytes(32));
+                $reset_expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
+
+                $sql = "UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sss", $reset_token, $reset_expires, $email);
+                $stmt->execute();
+
+                $success = "If the email exists, a reset link has been sent. Check your email.";
+            } else {
+                $success = "If the email exists, a reset link has been sent.";
+            }
         }
     }
 }
@@ -51,6 +58,7 @@ if(isset($_POST["forgot"])){
                         <?php if (isset($error)) { echo "<div class='alert alert-danger'>$error</div>"; } ?>
                         <?php if (isset($success)) { echo "<div class='alert alert-success'>$success</div>"; } ?>
                         <form method="POST" action="">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Enter your email:</label>
                                 <input type="email" name="email" class="form-control" required>

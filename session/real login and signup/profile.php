@@ -2,6 +2,10 @@
 session_start();
 require "config.php";
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: secure login.php");
     exit();
@@ -12,20 +16,36 @@ $error = '';
 $success = '';
 
 if(isset($_POST["update"])){
-    $username = trim($_POST["username"]);
-    $email = trim($_POST["email"]);
-
-    if(empty($username) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $error = "Valid username and email are required!";
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error = "Invalid request!";
     } else {
-        $sql = "UPDATE users SET username = ?, email = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssi", $username, $email, $user_id);
-        if($stmt->execute()){
-            $_SESSION['username'] = $username;
-            $success = "Profile updated successfully!";
+        $username = trim($_POST["username"]);
+        $email = trim($_POST["email"]);
+
+        if(empty($username) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){
+            $error = "Valid username and email are required!";
+        } elseif(strlen($username) < 3 || !preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+            $error = "Username must be at least 3 characters and contain only letters, numbers, and underscores!";
         } else {
-            $error = "Error updating profile!";
+            $sql = "SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssi", $username, $email, $user_id);
+            $stmt->execute();
+            $existing_user = $stmt->get_result();
+
+            if($existing_user->num_rows > 0) {
+                $error = "Username or email already exists!";
+            } else {
+                $sql = "UPDATE users SET username = ?, email = ? WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssi", $username, $email, $user_id);
+                if($stmt->execute()){
+                    $_SESSION['username'] = $username;
+                    $success = "Profile updated successfully!";
+                } else {
+                    $error = "Error updating profile!";
+                }
+            }
         }
     }
 }
@@ -57,6 +77,7 @@ $user = $stmt->get_result()->fetch_assoc();
                         <?php if (isset($error)) { echo "<div class='alert alert-danger'>$error</div>"; } ?>
                         <?php if (isset($success)) { echo "<div class='alert alert-success'>$success</div>"; } ?>
                         <form method="POST" action="">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username:</label>
                                 <input type="text" name="username" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" required>
