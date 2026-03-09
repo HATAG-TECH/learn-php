@@ -2,9 +2,9 @@
 require "config.php";
 
 function addColumnIfMissing($conn, $table, $column, $definition) {
-    $check_sql = "SHOW COLUMNS FROM {$table} LIKE ?";
+    $check_sql = "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?";
     $check_stmt = $conn->prepare($check_sql);
-    $check_stmt->bind_param("s", $column);
+    $check_stmt->bind_param("ss", $table, $column);
     $check_stmt->execute();
     $result = $check_stmt->get_result();
 
