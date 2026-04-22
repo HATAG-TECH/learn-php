@@ -5,9 +5,9 @@ $json = json_encode($data, JSON_PRETTY_PRINT);
 $file = fopen(__DIR__ . "/user.json", "r");
 
 if ($file) {
-    echo "Mode r: File opened in read-only mode. Writing with fwrite() is not allowed, so user.json stays unchanged and valid.";
+    echo "File opened in read-only mode. Writing with fwrite() is not allowed, so user.json stays unchanged and valid.";
     fclose($file);
 } else {
-    echo "Mode r: Could not open user.json. The file may not exist.";
+    echo "Could not open user.json. The file may not exist.";
 }
 ?>

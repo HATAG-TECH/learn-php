@@ -7,8 +7,8 @@ $file = fopen(__DIR__ . "/user.json", "w+");
 if ($file) {
     fwrite($file, $json);
     fclose($file);
-    echo "Mode w+: Data written. Existing content was overwritten.";
+    echo "Data written. Existing content was overwritten.";
 } else {
-    echo "Mode w+: Could not open user.json.";
+    echo "Could not open user.json.";
 }
 ?>

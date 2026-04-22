@@ -7,8 +7,8 @@ $file = @fopen(__DIR__ . "/user.json", "x");
 if ($file) {
     fwrite($file, $json);
     fclose($file);
-    echo "Mode x: New file created and data written.";
+    echo "New file created and data written.";
 } else {
-    echo "Mode x: Failed. user.json already exists.";
+    echo "Failed. user.json already exists.";
 }
 ?>

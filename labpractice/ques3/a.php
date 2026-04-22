@@ -28,8 +28,8 @@ if ($file) {
 }
 
 if ($ok) {
-    echo "Mode a: Data appended while keeping user.json valid JSON.";
+    echo "Data appended while keeping user.json valid JSON.";
 } else {
-    echo "Mode a: Could not open user.json.";
+    echo "Could not open user.json.";
 }
 ?>

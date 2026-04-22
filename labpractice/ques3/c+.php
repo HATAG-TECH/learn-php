@@ -21,8 +21,8 @@ if ($file) {
     rewind($file);
     fwrite($file, $json);
     fclose($file);
-    echo "Mode c+: Data written after manual truncate.";
+    echo "Data written after manual truncate.";
 } else {
-    echo "Mode c+: Could not open user.json.";
+    echo "Could not open user.json.";
 }
 ?>

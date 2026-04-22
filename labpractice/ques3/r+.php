@@ -21,8 +21,8 @@ if ($file) {
     rewind($file);
     fwrite($file, $json);
     fclose($file);
-    echo "Mode r+: Data written after manual truncate.";
+    echo "Data written after manual truncate.";
 } else {
-    echo "Mode r+: Could not open user.json. The file may not exist.";
+    echo "Could not open user.json. The file may not exist.";
 }
 ?>

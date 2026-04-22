@@ -28,8 +28,8 @@ if ($file) {
 }
 
 if ($ok) {
-    echo "Mode a+: Data appended to the end of the file.";
+    echo "Data appended to the end of the file.";
 } else {
-    echo "Mode a+: Could not open user.json.";
+    echo "Could not open user.json.";
 }
 ?>
