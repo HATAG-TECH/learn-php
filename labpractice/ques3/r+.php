@@ -1,6 +1,6 @@
 <?php
 // Mode: r+ (read/write - file must exist, no auto truncate)
-$data = ["id" => 1, "name" => "Aster", "role" => "Developer"];
+$data = ["id" => 1, "name" => "Habtamu", "role" => "Developer"];
 $filePath = __DIR__ . "/user.json";
 $existing = [];
 

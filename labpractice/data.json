@@ -1,0 +1,12 @@
+{
+    "student1": {
+        "name": "Habtamu",
+        "age": 92,
+        "city": "Addis Ababa"
+    },
+    "student2": {
+        "name": "Habtamu",
+        "age": 93,
+        "city": "debre biran"
+    }
+}

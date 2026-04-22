@@ -2,9 +2,9 @@
 // Data to write
 $data = [
 	"employees" => [
-		["firstName" => "John", "lastName" => "Doe"],
-		["firstName" => "Anna", "lastName" => "Smith"],
-		["firstName" => "Peter", "lastName" => "Jones"]
+		["firstName" => "Habtamu", "lastName" => "Habtamu"],
+		["firstName" => "Habtamu", "lastName" => "Habtamu"],
+		["firstName" => "Habtamu", "lastName" => "Habtamu"]
 	]
 ];
 

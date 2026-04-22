@@ -1,6 +1,6 @@
 <?php
 // Mode: a (append - add data at end of file)
-$data = ["id" => 1, "name" => "Aster", "role" => "Developer"];
+$data = ["id" => 1, "name" => "Habtamu", "role" => "Developer"];
 $filePath = __DIR__ . "/user.json";
 $existing = [];
 

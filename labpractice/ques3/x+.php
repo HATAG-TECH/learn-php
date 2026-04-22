@@ -1,6 +1,6 @@
 <?php
 // Mode: x+ (read/write - create new file, fail if file exists)
-$data = ["id" => 1, "name" => "Aster", "role" => "Developer"];
+$data = ["id" => 1, "name" => "Habtamu", "role" => "Developer"];
 $json = json_encode([$data], JSON_PRETTY_PRINT);
 $file = @fopen(__DIR__ . "/user.json", "x+");
 
