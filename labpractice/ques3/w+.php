@@ -1,7 +1,7 @@
 <?php
 // Mode: w+ (read/write - overwrite file)
 $data = ["id" => 1, "name" => "Aster", "role" => "Developer"];
-$json = json_encode($data, JSON_PRETTY_PRINT);
+$json = json_encode([$data], JSON_PRETTY_PRINT);
 $file = fopen(__DIR__ . "/user.json", "w+");
 
 if ($file) {

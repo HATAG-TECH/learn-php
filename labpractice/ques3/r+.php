@@ -1,8 +1,20 @@
 <?php
 // Mode: r+ (read/write - file must exist, no auto truncate)
 $data = ["id" => 1, "name" => "Aster", "role" => "Developer"];
-$json = json_encode($data, JSON_PRETTY_PRINT);
-$file = fopen(__DIR__ . "/user.json", "r+");
+$filePath = __DIR__ . "/user.json";
+$existing = [];
+
+if (file_exists($filePath)) {
+    $content = file_get_contents($filePath);
+    $decoded = json_decode($content, true);
+    if (is_array($decoded)) {
+        $existing = $decoded;
+    }
+}
+
+$existing[] = $data;
+$json = json_encode($existing, JSON_PRETTY_PRINT);
+$file = fopen($filePath, "r+");
 
 if ($file) {
     ftruncate($file, 0);
