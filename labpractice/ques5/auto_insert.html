@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IoT Auto Sensor Simulation</title>
+</head>
+<body>
+
+<h2>SmartFarm IoT Sensor Simulation</h2>
+<p>Data is being sent every 3 seconds...</p>
+
+<div id="output"></div>
+
+<script>
+function sendData() {
+    fetch("insert.php")
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("output").innerHTML = data;
+        console.log(data);
+    });
+}
+
+// Run immediately
+sendData();
+
+// Repeat every 3 seconds
+setInterval(sendData, 3000);
+</script>
+
+</body>
+</html>

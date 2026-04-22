@@ -13,12 +13,12 @@ $result = mysqli_query($conn, $sql);
 
 echo "<h2>Average Sensor Data per Plot</h2>";
 
-echo "<table border='1' cellpadding='8'>
+echo "<table border='1'>
 <tr>
 <th>Plot</th>
-<th>Avg Temperature (°C)</th>
-<th>Avg Humidity (%)</th>
-<th>Avg Soil Moisture (%)</th>
+<th>Avg Temp</th>
+<th>Avg Humidity</th>
+<th>Avg Soil</th>
 </tr>";
 
 while ($row = mysqli_fetch_assoc($result)) {
@@ -31,6 +31,4 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 echo "</table>";
-
-mysqli_close($conn);
 ?>
