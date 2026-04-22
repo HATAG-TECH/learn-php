@@ -1,7 +1,6 @@
 <?php
 include "db.php";
 
-// Simulate IoT sensor devices
 $plots = ["Livestock-1", "Soil-1", "Ankober-1", "Shewarobit-1"];
 $plot_id = $plots[array_rand($plots)];
 
@@ -13,7 +12,7 @@ $sql = "INSERT INTO sensor_data (plot_id, temperature, humidity, soil_moisture)
         VALUES ('$plot_id', $temperature, $humidity, $soil_moisture)";
 
 if (mysqli_query($conn, $sql)) {
-    echo "Inserted: $plot_id | $temperature°C | $humidity% | $soil_moisture%";
+    echo "Inserted: $plot_id | {$temperature}°C | {$humidity}% | {$soil_moisture}%";
 } else {
     echo "Error: " . mysqli_error($conn);
 }
